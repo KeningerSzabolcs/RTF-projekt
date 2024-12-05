@@ -1,0 +1,41 @@
+config:
+  target: "http://localhost:5173"
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 20
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 20
+      name: "Sustained load"
+
+scenarios:
+  - name: "Browse exams and register"
+    flow:
+      - get:
+          url: "/"
+          capture:
+            - selector: "title"
+              as: "pageTitle"
+      
+      - think: 2
+      
+      - post:
+          url: "/api/exams"
+          json:
+            title: "Performance Test Exam"
+            date: "2024-03-20T10:00"
+            capacity: 30
+      
+      - think: 1
+      
+      - get:
+          url: "/api/exams"
+      
+      - think: 2
+      
+      - post:
+          url: "/api/exams/1/register"
+          json:
+            name: "Test User"
+            email: "test@example.com"
